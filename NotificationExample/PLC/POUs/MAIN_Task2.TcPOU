@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <POU Name="MAIN_Task2" Id="{ea8d16ae-7106-48b1-bb65-8de4d17f5cd8}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN_Task2
+VAR
+	Machine : T_Machine;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Machine();]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

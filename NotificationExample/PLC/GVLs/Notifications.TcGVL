@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+  <GVL Name="Notifications" Id="{80222534-a333-456a-8671-fd5da0b63745}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	MachineSettingsLoaded  : T_Notification;
+	MachineSettingsUpdated : T_Notification;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>
