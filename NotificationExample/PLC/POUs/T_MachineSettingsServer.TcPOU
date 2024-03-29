@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="T_MachineSettingsServer" Id="{4fc7d8cc-7e10-4a85-9396-e2d12810bce2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK T_MachineSettingsServer
+VAR
+    SettingsLoaded  : BOOL; // raises MachineSettingsLoaded notification, handled by T_MachineSettingsClient
+    SettingsUpdated : BOOL; // raises MachoneSettingsUpdated notification, handled by T_MachineSettingsClient
+
+    Settings : ARRAY[1..10000] OF UDINT;
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="CyclicUpdate" Id="{ec79d643-b88c-4c4c-92a6-92d4c6e7b4de}">
+      <Declaration><![CDATA[METHOD CyclicUpdate
+VAR_INST
+    Init     : BOOL := TRUE;
+    i        : UDINT;
+    SendOnce : BOOL := TRUE; // set true to send single notifications
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF Init THEN
+    // clear the flag...
+    Init := FALSE;
+
+    // write some values into the settings...
+    FOR i := 1 TO 10000 DO
+        Settings[i] := i;
+    END_FOR
+END_IF
+
+IF SettingsLoaded THEN // manually set this flag to send SettingsLoaded notifications...
+    IF SendOnce THEN // Set SendOnce to FALSE to send notification every scan - should still work if tasks run on separate isolated cores!
+        SettingsLoaded := FALSE; 
+    END_IF
+
+    // raise the simple notification with no args...
+    Notifications.MachineSettingsLoaded.Raise();
+END_IF
+
+IF SettingsUpdated THEN // manually set this flag to send SettingsUpdated notifications...
+    IF SendOnce THEN // Set SendOnce to FALSE to send notification every scan - should still work if tasks run on separate isolated cores!
+        SettingsUpdated := FALSE; 
+    END_IF
+
+    // write the seettings into the notification args...
+    FOR i := 1 TO 10000 DO
+        Notifications.MachineSettingsUpdated.Args.Add_UDINT(Settings[i]);
+    END_FOR
+
+    // raise the notification...
+    Notifications.MachineSettingsUpdated.Raise();
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

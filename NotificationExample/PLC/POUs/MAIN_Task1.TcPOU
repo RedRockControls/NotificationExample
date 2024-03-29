@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="MAIN_Task1" Id="{3afae642-2c54-4c29-a9d8-58ae31c6c9fc}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN_Task1
 VAR
-    MachineSettings : T_MachineSettings;
+    MachineSettingsServer : T_MachineSettingsServer; // Sends settings and loaded status to MachineSettingsClient running in separate context (task)
     Init            : BOOL := TRUE;
 
 END_VAR
@@ -16,16 +16,17 @@ END_VAR
     // Link the handler to the notification...
     Notifications.MachineSettingsLoaded
         .ClearNotificationHandlers()
-    	.AddNotificationHandler(MAIN_Task2.Machine.OnSettingsLoaded);
+    	.AddNotificationHandler(MAIN_Task2.MachineSettingsClient.OnSettingsLoaded);
 
     Notifications.MachineSettingsUpdated
         .ClearNotificationHandlers()
-    	.AddNotificationHandler(MAIN_Task2.Machine.OnSettingsUpdated);
+    	.AddNotificationHandler(MAIN_Task2.MachineSettingsClient.OnSettingsUpdated);
 
     Init := FALSE;
 END_IF
 
-MachineSettings();
+// Run the server...
+MachineSettingsServer.CyclicUpdate();
 ]]></ST>
     </Implementation>
   </POU>

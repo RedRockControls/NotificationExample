@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="T_MachineSettingsClient" Id="{2dd0a898-38c4-4d9d-92bd-867f42c8c012}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK T_MachineSettingsClient // Handles notifications of settings loaded and settings updated
+VAR
+    OnSettingsLoaded  : T_NotificationHandler;
+    OnSettingsUpdated : T_NotificationHandler;
+
+    SettingsLoadedCount : UDINT;
+    LocalSettings       : ARRAY[1..10000] OF UDINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="HandleNotifications" Id="{601bb543-367a-4f6a-af4b-8411a5c4383c}">
+      <Declaration><![CDATA[METHOD HandleNotifications
+VAR
+    i                   : UDINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF OnSettingsLoaded.IsRaised() THEN
+    // do something...
+    SettingsLoadedCount := SettingsLoadedCount + 1;
+END_IF
+
+IF OnSettingsUpdated.IsRaised() THEN
+    // read the 10,000 settings passed via the notification args...
+    FOR i := 1 TO 10000 DO
+		// read the arg...
+		LocalSettings[i] := OnSettingsUpdated.Args.Read_UDINT();
+    END_FOR
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>
